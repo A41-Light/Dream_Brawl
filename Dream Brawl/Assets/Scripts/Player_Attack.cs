@@ -6,6 +6,8 @@ public class Player_Attack : MonoBehaviour
 {
 
     public List<GameObject> weapons_in_range = new List<GameObject>();
+
+    private GameObject current_weapon = null;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -17,10 +19,21 @@ public class Player_Attack : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Attack();
+            if(current_weapon != null)
+            {
+                current_weapon.GetComponent<Weapon>().Attack();
+            }
         }
-
-        if (Input.GetKeyDown(KeyCode.E))
+        
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (current_weapon != null)
+            {
+                Drop_Weapon(current_weapon);
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (weapons_in_range.Count > 0)
             {
@@ -43,12 +56,6 @@ public class Player_Attack : MonoBehaviour
                 }
             }
         }
-    }
-
-    void Attack()
-    {
-        // Implement attack logic here
-        Debug.Log("Attack!");
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -76,13 +83,28 @@ public class Player_Attack : MonoBehaviour
             }
         }
     }
-    
+
     void Hold_Weapon(GameObject weapon)
     {
         Debug.Log("Eqiuped :" + weapon.name);
+
+        if (current_weapon != null)
+        {
+            Drop_Weapon(current_weapon);
+        }
+
+        current_weapon = weapon;
         weapons_in_range.Remove(weapon);
-        GameObject held_weapon = Instantiate(weapon, transform.position, Quaternion.identity);
-        held_weapon.transform.SetParent(transform, false);
-        weapon.SetActive(false);
+        weapon.transform.SetParent(transform, false);
+        weapon.transform.localPosition = new Vector3(0, 0, 0);
+    }
+
+    void Drop_Weapon(GameObject weapon)
+    {
+        Debug.Log("Dropped :" + weapon.name);
+
+        weapon.transform.SetParent(null, false);
+        weapon.transform.position = transform.position;
+        current_weapon = null;
     }
 }
