@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -19,20 +20,21 @@ public class Player_Attack : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(current_weapon != null)
+            if (current_weapon != null)
             {
                 current_weapon.GetComponent<Weapon>().Attack();
             }
         }
-        
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
             if (current_weapon != null)
             {
                 Drop_Weapon(current_weapon);
+                UpdateText("Bare Hands");
             }
         }
-        
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             if (weapons_in_range.Count > 0)
@@ -66,7 +68,6 @@ public class Player_Attack : MonoBehaviour
             if (other.transform.parent != null)
             {
                 weapons_in_range.Add(other.transform.parent.gameObject);
-                Debug.Log("Picked :" + other.transform.parent.name);
             }
         }
     }
@@ -79,14 +80,13 @@ public class Player_Attack : MonoBehaviour
             if (other.transform.parent != null)
             {
                 weapons_in_range.Remove(other.transform.parent.gameObject);
-                Debug.Log("Removed :" + other.transform.parent.name);
             }
         }
     }
 
     void Hold_Weapon(GameObject weapon)
     {
-        Debug.Log("Eqiuped :" + weapon.name);
+        Debug.Log("Eqiuped :" + GetWeaponName(weapon));
 
         if (current_weapon != null)
         {
@@ -94,6 +94,7 @@ public class Player_Attack : MonoBehaviour
         }
 
         current_weapon = weapon;
+        UpdateText(GetWeaponName(current_weapon));
         weapons_in_range.Remove(weapon);
         weapon.transform.SetParent(transform, false);
         weapon.transform.localPosition = new Vector3(0, 0, 0);
@@ -101,10 +102,27 @@ public class Player_Attack : MonoBehaviour
 
     void Drop_Weapon(GameObject weapon)
     {
-        Debug.Log("Dropped :" + weapon.name);
+        Debug.Log("Dropped :" + GetWeaponName(weapon));
 
         weapon.transform.SetParent(null, false);
         weapon.transform.position = transform.position;
         current_weapon = null;
     }
+
+    void UpdateText(string text)
+    {
+        FindAnyObjectByType<TextManager>().UpdateText(text);
+    }
+
+    
+    string GetWeaponName(GameObject weapon)
+    {
+        Weapon weaponScript = weapon.GetComponent<Weapon>();
+        if (weaponScript == null)
+        {
+            Debug.LogError("❌ Weapon component not found on: " + weapon.name);
+            return "Unknown Weapon";
+        }
+        return weaponScript.ReturnName();
+}   
 }

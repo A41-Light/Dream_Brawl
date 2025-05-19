@@ -1,19 +1,18 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class TextManager : MonoBehaviour
 {
 
-    public GameObject textPrefab;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public TMP_Text textComponent; // Reference to the TextMeshPro component
+    
+    public void UpdateText(string newText)
     {
-        
+        if (textComponent != null)
+            textComponent.text = newText;
+        else
+            Debug.LogWarning("TMP Text Component is not assigned!");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
